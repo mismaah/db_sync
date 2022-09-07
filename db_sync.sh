@@ -24,10 +24,6 @@ do
     break
 done
 
-date=$(date +"%Y-%m-%dT%H-%M-%S")
-file=./backups/$source/$source_db/$date.dump
-mkdir -p "${file%/*}"
-
 PS3="Select target: "
 
 echo ""
@@ -56,6 +52,9 @@ read -p "Are you sure? (Y/n)" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+    date=$(date +"%Y-%m-%dT%H-%M-%S")
+    file=./backups/$source/$source_db/$date.dump
+    mkdir -p "${file%/*}"
     export PGPASSWORD=$source_pwd
     pg_dump -Fc -v --dbname=$db_string/$source_db > $file
     export PGPASSWORD=$target_pwd
