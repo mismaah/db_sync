@@ -2,3 +2,5 @@ sources/*
 !sources/example_source
 
 backups
+
+sync.log
