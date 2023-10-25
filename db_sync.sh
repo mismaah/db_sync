@@ -24,6 +24,14 @@ do
     break
 done
 
+date=$(date +"%Y-%m-%dT%H-%M-%S")
+file=./backups/$source/$source_db/$date.dump
+mkdir -p "${file%/*}"
+export PGPASSWORD=$source_pwd
+pg_dump -Fc -v --dbname=$db_string/$source_db > $file
+date=$(date +"%Y-%m-%dT%H:%M:%S")
+echo "$date Backed up $source_db in $source" >> sync.log
+
 PS3="Select target: "
 
 echo ""
@@ -52,13 +60,6 @@ read -p "Are you sure? (Y/n)" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-    date=$(date +"%Y-%m-%dT%H-%M-%S")
-    file=./backups/$source/$source_db/$date.dump
-    mkdir -p "${file%/*}"
-    export PGPASSWORD=$source_pwd
-    pg_dump -Fc -v --dbname=$db_string/$source_db > $file
-    date=$(date +"%Y-%m-%dT%H:%M:%S")
-    echo "$date Backed up $source_db in $source" >> sync.log
     export PGPASSWORD=$target_pwd
     pg_restore -Fc -v --no-privileges --no-owner --clean --dbname=$target_db_string/$source_db $file
     date=$(date +"%Y-%m-%dT%H:%M:%S")
