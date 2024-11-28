@@ -54,14 +54,17 @@ if [[ "$modify" == "false" ]]; then
     exit 100
 fi
 
+read -p "Which role should be the owner: " owner
+
 echo "This will copy $source_db in $source into $target"
 
-read -p "Are you sure? (Y/n)" -n 1 -r
+read -p "Are you sure? (y/N)" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     export PGPASSWORD=$target_pwd
-    pg_restore -Fc -v --no-privileges --no-owner --clean --dbname=$target_db_string/$source_db $file
+    pg_restore -Fc -v --no-privileges --no-owner --role=$owner --clean --dbname=$target_db_string/$source_db $file
+    # pg_restore -Fc -v --clean --dbname=$target_db_string/$source_db $file
     date=$(date +"%Y-%m-%dT%H:%M:%S")
     echo "$date Restored $source_db into $target" >> sync.log
 fi
